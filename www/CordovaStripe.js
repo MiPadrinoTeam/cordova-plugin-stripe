@@ -1,5 +1,5 @@
-var exec = require('cordova/exec');
-var noop = function(){};
+var exec = require("cordova/exec");
+var noop = function () {};
 
 /**
  * @namespace cordova.plugins
@@ -39,14 +39,13 @@ var noop = function(){};
  * @exports stripe
  */
 module.exports = {
-
   /**
    * Set publishable key
    * @param key {string} Publishable key
    * @param [success] {Function} Success callback
    * @param [error] {Function} Error callback
    */
-  setPublishableKey: function(key, success, error) {
+  setPublishableKey: function (key, success, error) {
     success = success || noop;
     error = error || noop;
     exec(success, error, "CordovaStripe", "setPublishableKey", [key]);
@@ -58,10 +57,37 @@ module.exports = {
    * @param success {Function} Success callback
    * @param error {Function} Error callback
    */
-  createCardToken: function(creditCard, success, error) {
+  createCardToken: function (creditCard, success, error) {
     success = success || noop;
     error = error || noop;
     exec(success, error, "CordovaStripe", "createCardToken", [creditCard]);
+  },
+
+  /**
+   * Create an account token
+   * @param account {module:stripe.ConnectAccountParams} Bank account information
+   * @param {Function} success Success callback
+   * @param {Function} error Error callback
+   */
+  createAccountToken: function (account, success, error) {
+    success = success || noop;
+    error = error || noop;
+
+    const params = {
+      individual_email: account.individual.email,
+      individual_first_name: account.individual.first_name,
+      individual_last_name: account.individual.last_name,
+      individual_gender: account.individual.gender,
+      individual_phone: account.individual.phone,
+      individual_ssn_last_4: account.individual.ssn_last_4,
+      individual_address_city: account.individual.address.city,
+      individual_address_country: account.individual.address.country,
+      individual_address_line1: account.individual.address.line1,
+      individual_address_line2: account.individual.address.line2,
+      individual_address_postal_code: account.individual.address.postal_code,
+      individual_address_state: account.individual.address.state,
+    };
+    exec(success, error, "CordovaStripe", "createAccountToken", [params]);
   },
 
   /**
@@ -70,10 +96,12 @@ module.exports = {
    * @param {Function} success Success callback
    * @param {Function} error Error callback
    */
-  createBankAccountToken: function(bankAccount, success, error) {
+  createBankAccountToken: function (bankAccount, success, error) {
     success = success || noop;
     error = error || noop;
-    exec(success, error, "CordovaStripe", "createBankAccountToken", [bankAccount]);
+    exec(success, error, "CordovaStripe", "createBankAccountToken", [
+      bankAccount,
+    ]);
   },
 
   /**
@@ -82,7 +110,7 @@ module.exports = {
    * @param {Function} success  Success callback that will be called if card number is valid
    * @param {Function} error  Error callback that will be called if card number is invalid
    */
-  validateCardNumber: function(cardNumber, success, error) {
+  validateCardNumber: function (cardNumber, success, error) {
     success = success || noop;
     error = error || noop;
     exec(success, error, "CordovaStripe", "validateCardNumber", [cardNumber]);
@@ -95,10 +123,13 @@ module.exports = {
    * @param {Function} success
    * @param {Function} error
    */
-  validateExpiryDate: function(expMonth, expYear, success, error) {
+  validateExpiryDate: function (expMonth, expYear, success, error) {
     success = success || noop;
     error = error || noop;
-    exec(success, error, "CordovaStripe", "validateExpiryDate", [expMonth, expYear]);
+    exec(success, error, "CordovaStripe", "validateExpiryDate", [
+      expMonth,
+      expYear,
+    ]);
   },
 
   /**
@@ -108,16 +139,16 @@ module.exports = {
    * @param {Function} error
    * @example
    * function onSuccess() {
-     *   console.log('isValid');
-     * }
+   *   console.log('isValid');
+   * }
    *
    * function onError() {
-     *   console.log('invalid');
-     * }
+   *   console.log('invalid');
+   * }
    *
    * cordova.plugin.stripe.validateCVC('424', onSuccess, onError);
    */
-  validateCVC: function(cvc, success, error) {
+  validateCVC: function (cvc, success, error) {
     success = success || noop;
     error = error || noop;
     exec(success, error, "CordovaStripe", "validateCVC", [cvc]);
@@ -130,13 +161,12 @@ module.exports = {
    * @param {Function} error
    * @example
    * cordova.plugins.stripe.getCardType('4242424242424242', function(cardType) {
-     *   console.log(cardType); // visa
-     * });
+   *   console.log(cardType); // visa
+   * });
    */
-  getCardType: function(cardNumber, success, error) {
+  getCardType: function (cardNumber, success, error) {
     success = success || noop;
     error = error || noop;
     exec(success, error, "CordovaStripe", "getCardType", [cardNumber]);
-  }
-
+  },
 };
