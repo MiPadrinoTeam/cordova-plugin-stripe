@@ -123,8 +123,10 @@
 
 
     [self.commandDelegate runInBackground:^{
-        STPConnectIndividualParams *individualParams = [STPConnectIndividualParams new];
-
+        NSDictionary* const accountInfo = [command.arguments objectAtIndex:0];
+        STPConnectAccountIndividualParams *individualParams = [STPConnectAccountIndividualParams new];
+        
+        
         individualParams.email = accountInfo[@"individual_email"];
         individualParams.firstName = accountInfo[@"individual_first_name"];
         individualParams.lastName = accountInfo[@"individual_last_name"];
@@ -132,16 +134,18 @@
         individualParams.phone = accountInfo[@"individual_phone"];
         individualParams.ssnLast4 = accountInfo[@"individual_ssn_last_4"];
         individualParams.address.city = accountInfo[@"individual_address_city"];
-        individualParams.address.country = [@"individual_address_country"];
-        individualParams.address.line1 = [@"individual_address_line1"];
-        individualParams.address.line2 = [@"individual_address_line2"];
-        individualParams.address.postalCode = [@"individual_address_postal_code"];
-        individualParams.address.state = [@"individual_address_state"];
-
-        STPConnectAccountParams *connectAccountParams = [[STPConnectAccountParams alloc] initWithTosShownAndAccepted:YES:individual:individualParams];
-
+        individualParams.address.country = accountInfo[@"individual_address_country"];
+        individualParams.address.line1 = accountInfo[@"individual_address_line1"];
+        individualParams.address.line2 = accountInfo[@"individual_address_line2"];
+        individualParams.address.postalCode = accountInfo[@"individual_address_postal_code"];
+        individualParams.address.state = accountInfo[@"individual_address_state"];
+        
+        STPConnectAccountParams *connectAccountParams = [[STPConnectAccountParams alloc] initWithTosShownAndAccepted:YES individual:individualParams];
+        
+        
+        
         [self.client createTokenWithConnectAccount:connectAccountParams completion:[self handleTokenCallback:command]];
-    }
+    }];
 }
 
 - (void)validateCardNumber:(CDVInvokedUrlCommand *)command
