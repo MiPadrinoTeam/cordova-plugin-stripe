@@ -1,4 +1,4 @@
-package com.zyramedia.cordova.stripe;
+package com.mipadrino.cordova.stripe;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -33,6 +33,8 @@ public class CordovaStripe extends CordovaPlugin {
       setPublishableKey(data.getString(0), callbackContext);
     } else if (action.equals("createCardToken")) {
       createCardToken(data.getJSONObject(0), callbackContext);
+    } else if (action.equals("createAccountToken")) {
+      createAccountToken(data.getJSONObject(0), callbackContext);
     } else if (action.equals("createBankAccountToken")) {
       createBankAccountToken(data.getJSONObject(0), callbackContext);
     } else if (action.equals("validateCardNumber")) {
@@ -96,6 +98,46 @@ public class CordovaStripe extends CordovaPlugin {
     } catch (JSONException e) {
       callbackContext.error(e.getLocalizedMessage());
     }
+
+  }
+
+  private void createAccountToken(final JSONObject bankAccount, final CallbackContext callbackContext) {
+
+    // try {
+
+    //   BankAccount bankAccountObject = new BankAccount(
+    //     bankAccount.getString("account_number"),
+    //     bankAccount.getString("country"),
+    //     bankAccount.getString("currency"),
+    //     bankAccount.getString("routing_number")
+    //   );
+
+    //   if (bankAccount.getString("account_holder_name") != null) {
+    //     bankAccountObject.setAccountHolderName(bankAccount.getString("account_holder_name"));
+    //   }
+
+    //   String accountHolderType = bankAccount.getString("account_holder_type");
+    //   if (accountHolderType.equals("individual")) {
+    //     bankAccountObject.setAccountHolderType(BankAccount.TYPE_INDIVIDUAL);
+    //   } else if (accountHolderType.equals("company")) {
+    //     bankAccountObject.setAccountHolderType(BankAccount.TYPE_COMPANY);
+    //   }
+
+    //   stripeInstance.createBankAccountToken(
+    //     bankAccountObject,
+    //     new TokenCallback() {
+    //       public void onSuccess(Token token) {
+    //         callbackContext.success(getBankObjectFromToken(token));
+    //       }
+    //       public void onError(Exception error) {
+    //         callbackContext.error(error.getLocalizedMessage());
+    //       }
+    //     }
+    //   );
+
+    // } catch (JSONException e) {
+    //   callbackContext.error(e.getLocalizedMessage());
+    // }
 
   }
 
@@ -191,7 +233,7 @@ public class CordovaStripe extends CordovaPlugin {
       tokenObject.put("type", token.getType());
 
       return tokenObject;
-    } 
+    }
     catch (JSONException e) {
       return null;
     }
@@ -226,7 +268,7 @@ public class CordovaStripe extends CordovaPlugin {
 
       return tokenObject;
 
-    } 
+    }
     catch (JSONException e) {
       return null;
     }

@@ -132,6 +132,9 @@
         individualParams.lastName = accountInfo[@"individual_last_name"];
         individualParams.gender = accountInfo[@"individual_gender"];
         individualParams.phone = accountInfo[@"individual_phone"];
+        individualParams.dateOfBirth.day = (int) accountInfo[@"individual_dob_day"];
+        individualParams.dateOfBirth.month = (int) accountInfo[@"individual_dob_month"];
+        individualParams.dateOfBirth.year = (int) accountInfo[@"individual_dob_year"];
         individualParams.ssnLast4 = accountInfo[@"individual_ssn_last_4"];
         individualParams.address.city = accountInfo[@"individual_address_city"];
         individualParams.address.country = accountInfo[@"individual_address_country"];

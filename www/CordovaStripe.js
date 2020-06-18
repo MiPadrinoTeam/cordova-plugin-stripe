@@ -86,6 +86,9 @@ module.exports = {
       individual_address_line2: account.individual.address.line2,
       individual_address_postal_code: account.individual.address.postal_code,
       individual_address_state: account.individual.address.state,
+      individual_dob_day: account.individual.dob.day,
+      individual_dob_month: account.individual.dob.month,
+      individual_dob_year: account.individual.dob.year,
     };
     exec(success, error, "CordovaStripe", "createAccountToken", [params]);
   },
