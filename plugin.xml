@@ -29,7 +29,7 @@
         <header-file src="src/ios/CordovaStripe.h" />
         <source-file src="src/ios/CordovaStripe.m" />
 
-        <framework src="src/ios/Stripe.framework" custom="true" />
+        <framework src="Stripe" spec="19.3.0" />
 
     </platform>
 
