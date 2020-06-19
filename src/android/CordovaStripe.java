@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import com.stripe.android.CardUtils;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.Stripe;
+import com.stripe.android.model.Address;
+import com.stripe.android.model.DateOfBirth;
 import com.stripe.android.model.AccountParams;
 import com.stripe.android.model.BankAccount;
 import com.stripe.android.model.Card;
@@ -81,6 +83,7 @@ public class CordovaStripe extends CordovaPlugin {
 
       stripeInstance.createToken(cardObject, new TokenCallback() {
         public void onSuccess(Token token) {
+          // token.
           callbackContext.success(getCardObjectFromToken(token));
         }
 
@@ -97,42 +100,34 @@ public class CordovaStripe extends CordovaPlugin {
 
   private void createAccountToken(final JSONObject account, final CallbackContext callbackContext) {
 
-    // try {
+    try {
+      Address address = Address.fromJson(account.getJSONObject("address"));
+      JSONObject individual = account.getJSONObject("individual");
+      JSONObject dob = account.getJSONObject("dob");
+      DateOfBirth dateOfBirth = new DateOfBirth(dob.getInt("day"), dob.getInt("month"), dob.getInt("year"));
+      AccountParams.BusinessTypeParams.Individual.Builder individualParams = new AccountParams.BusinessTypeParams.Individual.Builder();
 
-    // BankAccount accountObject = new BankAccount(
-    // bankAccount.getString("account_number"),
-    // bankAccount.getString("country"),
-    // bankAccount.getString("currency"),
-    // bankAccount.getString("routing_number")
-    // );
+      individualParams.setEmail(individual.getString("email"));
+      individualParams.setFirstName(individual.getString("email"));
+      individualParams.setLastName(individual.getString("email"));
+      individualParams.setPhone(individual.getString("email"));
+      individualParams.setGender(individual.getString("email"));
+      individualParams.setSsnLast4(individual.getString("email"));
+      individualParams.setAddress(address);
+      individualParams.setDateOfBirth(dateOfBirth);
 
-    // if (bankAccount.getString("account_holder_name") != null) {
-    // accountObject.setAccountHolderName(bankAccount.getString("account_holder_name"));
-    // }
+      stripeInstance.createAccountToken(individualParams, new TokenCallback() {
+        public void onSuccess(Token token) {
+          callbackContext.success(jsonifyToken(token));
+        }
 
-    // String accountHolderType = bankAccount.getString("account_holder_type");
-    // if (accountHolderType.equals("individual")) {
-    // accountObject.setAccountHolderType(BankAccount.TYPE_INDIVIDUAL);
-    // } else if (accountHolderType.equals("company")) {
-    // accountObject.setAccountHolderType(BankAccount.TYPE_COMPANY);
-    // }
-
-    // stripeInstance.createAccountToken(
-    // accountObject,
-    // new TokenCallback() {
-    // public void onSuccess(Token token) {
-    // callbackContext.success(getBankObjectFromToken(token));
-    // }
-    // public void onError(Exception error) {
-    // callbackContext.error(error.getLocalizedMessage());
-    // }
-    // }
-    // );
-
-    // } catch (JSONException e) {
-    // callbackContext.error(e.getLocalizedMessage());
-    // }
-
+        public void onError(Exception error) {
+          callbackContext.error(error.getLocalizedMessage());
+        }
+      });
+    } catch (JSONException e) {
+      callbackContext.error(e.getLocalizedMessage());
+    }
   }
 
   private void createBankAccountToken(final JSONObject bankAccount, final CallbackContext callbackContext) {
@@ -199,6 +194,19 @@ public class CordovaStripe extends CordovaPlugin {
   private void getCardType(final String cardNumber, final CallbackContext callbackContext) {
     Card card = new Card(cardNumber, null, null, null);
     callbackContext.success(card.getBrand());
+  }
+
+  private JSONObject jsonifyToken(final Token token) {
+    try {
+      JSONObject tokenObject = new JSONObject();
+      tokenObject.put("id", token.getId());
+      tokenObject.put("created", token.getCreated());
+      tokenObject.put("live_mode", token.getLivemode());
+      tokenObject.put("type", token.getType());
+      tokenObject.put("used", token.getUsed());
+    } catch (JSONException e) {
+      return null;
+    }
   }
 
   private JSONObject getBankObjectFromToken(final Token token) {
