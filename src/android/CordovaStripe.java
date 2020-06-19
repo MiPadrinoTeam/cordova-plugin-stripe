@@ -12,10 +12,10 @@ import org.json.JSONArray;
 import com.stripe.android.CardUtils;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.Stripe;
+import com.stripe.android.model.AccountParams;
 import com.stripe.android.model.BankAccount;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
-
 
 public class CordovaStripe extends CordovaPlugin {
 
@@ -68,32 +68,26 @@ public class CordovaStripe extends CordovaPlugin {
 
     try {
 
-      Card cardObject = new Card(
-        creditCard.getString("number"),
-        creditCard.getInt("expMonth"),
-        creditCard.getInt("expYear"),
-        creditCard.getString("cvc"),
-        creditCard.has("name") ? creditCard.getString("name") : null,
-        creditCard.has("address_line1") ? creditCard.getString("address_line1") : null,
-        creditCard.has("address_line2") ? creditCard.getString("address_line2") : null,
-        creditCard.has("address_city") ? creditCard.getString("address_city") : null,
-        creditCard.has("address_state") ? creditCard.getString("address_state") : null,
-        creditCard.has("postalCode") ? creditCard.getString("postalCode") : null,
-        creditCard.has("address_country") ? creditCard.getString("address_country") : null,
-        creditCard.has("currency") ? creditCard.getString("currency") : null
-      );
+      Card cardObject = new Card(creditCard.getString("number"), creditCard.getInt("expMonth"),
+          creditCard.getInt("expYear"), creditCard.getString("cvc"),
+          creditCard.has("name") ? creditCard.getString("name") : null,
+          creditCard.has("address_line1") ? creditCard.getString("address_line1") : null,
+          creditCard.has("address_line2") ? creditCard.getString("address_line2") : null,
+          creditCard.has("address_city") ? creditCard.getString("address_city") : null,
+          creditCard.has("address_state") ? creditCard.getString("address_state") : null,
+          creditCard.has("postalCode") ? creditCard.getString("postalCode") : null,
+          creditCard.has("address_country") ? creditCard.getString("address_country") : null,
+          creditCard.has("currency") ? creditCard.getString("currency") : null);
 
-      stripeInstance.createToken(
-        cardObject,
-        new TokenCallback() {
-          public void onSuccess(Token token) {
-            callbackContext.success(getCardObjectFromToken(token));
-          }
-          public void onError(Exception error) {
-            callbackContext.error(error.getLocalizedMessage());
-          }
+      stripeInstance.createToken(cardObject, new TokenCallback() {
+        public void onSuccess(Token token) {
+          callbackContext.success(getCardObjectFromToken(token));
         }
-      );
+
+        public void onError(Exception error) {
+          callbackContext.error(error.getLocalizedMessage());
+        }
+      });
 
     } catch (JSONException e) {
       callbackContext.error(e.getLocalizedMessage());
@@ -101,42 +95,42 @@ public class CordovaStripe extends CordovaPlugin {
 
   }
 
-  private void createAccountToken(final JSONObject bankAccount, final CallbackContext callbackContext) {
+  private void createAccountToken(final JSONObject account, final CallbackContext callbackContext) {
 
     // try {
 
-    //   BankAccount bankAccountObject = new BankAccount(
-    //     bankAccount.getString("account_number"),
-    //     bankAccount.getString("country"),
-    //     bankAccount.getString("currency"),
-    //     bankAccount.getString("routing_number")
-    //   );
+    // BankAccount accountObject = new BankAccount(
+    // bankAccount.getString("account_number"),
+    // bankAccount.getString("country"),
+    // bankAccount.getString("currency"),
+    // bankAccount.getString("routing_number")
+    // );
 
-    //   if (bankAccount.getString("account_holder_name") != null) {
-    //     bankAccountObject.setAccountHolderName(bankAccount.getString("account_holder_name"));
-    //   }
+    // if (bankAccount.getString("account_holder_name") != null) {
+    // accountObject.setAccountHolderName(bankAccount.getString("account_holder_name"));
+    // }
 
-    //   String accountHolderType = bankAccount.getString("account_holder_type");
-    //   if (accountHolderType.equals("individual")) {
-    //     bankAccountObject.setAccountHolderType(BankAccount.TYPE_INDIVIDUAL);
-    //   } else if (accountHolderType.equals("company")) {
-    //     bankAccountObject.setAccountHolderType(BankAccount.TYPE_COMPANY);
-    //   }
+    // String accountHolderType = bankAccount.getString("account_holder_type");
+    // if (accountHolderType.equals("individual")) {
+    // accountObject.setAccountHolderType(BankAccount.TYPE_INDIVIDUAL);
+    // } else if (accountHolderType.equals("company")) {
+    // accountObject.setAccountHolderType(BankAccount.TYPE_COMPANY);
+    // }
 
-    //   stripeInstance.createBankAccountToken(
-    //     bankAccountObject,
-    //     new TokenCallback() {
-    //       public void onSuccess(Token token) {
-    //         callbackContext.success(getBankObjectFromToken(token));
-    //       }
-    //       public void onError(Exception error) {
-    //         callbackContext.error(error.getLocalizedMessage());
-    //       }
-    //     }
-    //   );
+    // stripeInstance.createAccountToken(
+    // accountObject,
+    // new TokenCallback() {
+    // public void onSuccess(Token token) {
+    // callbackContext.success(getBankObjectFromToken(token));
+    // }
+    // public void onError(Exception error) {
+    // callbackContext.error(error.getLocalizedMessage());
+    // }
+    // }
+    // );
 
     // } catch (JSONException e) {
-    //   callbackContext.error(e.getLocalizedMessage());
+    // callbackContext.error(e.getLocalizedMessage());
     // }
 
   }
@@ -145,12 +139,8 @@ public class CordovaStripe extends CordovaPlugin {
 
     try {
 
-      BankAccount bankAccountObject = new BankAccount(
-        bankAccount.getString("account_number"),
-        bankAccount.getString("country"),
-        bankAccount.getString("currency"),
-        bankAccount.getString("routing_number")
-      );
+      BankAccount bankAccountObject = new BankAccount(bankAccount.getString("account_number"),
+          bankAccount.getString("country"), bankAccount.getString("currency"), bankAccount.getString("routing_number"));
 
       if (bankAccount.getString("account_holder_name") != null) {
         bankAccountObject.setAccountHolderName(bankAccount.getString("account_holder_name"));
@@ -163,17 +153,15 @@ public class CordovaStripe extends CordovaPlugin {
         bankAccountObject.setAccountHolderType(BankAccount.TYPE_COMPANY);
       }
 
-      stripeInstance.createBankAccountToken(
-        bankAccountObject,
-        new TokenCallback() {
-          public void onSuccess(Token token) {
-            callbackContext.success(getBankObjectFromToken(token));
-          }
-          public void onError(Exception error) {
-            callbackContext.error(error.getLocalizedMessage());
-          }
+      stripeInstance.createBankAccountToken(bankAccountObject, new TokenCallback() {
+        public void onSuccess(Token token) {
+          callbackContext.success(getBankObjectFromToken(token));
         }
-      );
+
+        public void onError(Exception error) {
+          callbackContext.error(error.getLocalizedMessage());
+        }
+      });
 
     } catch (JSONException e) {
       callbackContext.error(e.getLocalizedMessage());
@@ -189,7 +177,8 @@ public class CordovaStripe extends CordovaPlugin {
     }
   }
 
-  private void validateExpiryDate(final Integer expMonth, final Integer expYear, final CallbackContext callbackContext) {
+  private void validateExpiryDate(final Integer expMonth, final Integer expYear,
+      final CallbackContext callbackContext) {
     Card card = new Card(null, expMonth, expYear, null);
     if (card.validateExpiryDate()) {
       callbackContext.success();
@@ -233,8 +222,7 @@ public class CordovaStripe extends CordovaPlugin {
       tokenObject.put("type", token.getType());
 
       return tokenObject;
-    }
-    catch (JSONException e) {
+    } catch (JSONException e) {
       return null;
     }
   }
@@ -268,8 +256,7 @@ public class CordovaStripe extends CordovaPlugin {
 
       return tokenObject;
 
-    }
-    catch (JSONException e) {
+    } catch (JSONException e) {
       return null;
     }
   }
