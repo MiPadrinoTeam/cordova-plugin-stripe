@@ -44,43 +44,6 @@
 }
 
 
-
-- (void)createCardToken:(CDVInvokedUrlCommand *)command
-{
-    if (self.client == nil) {
-        [self throwNotInitializedError:command];
-        return;
-    }
-
-    [self.commandDelegate runInBackground:^{
-
-        NSDictionary* const cardInfo = [[command arguments] objectAtIndex:0];
-
-        STPCardParams* cardParams = [[STPCardParams alloc] init];
-
-        STPAddress* address = [[STPAddress alloc] init];
-        address.line1 = cardInfo[@"address_line1"];
-        address.line2 = cardInfo[@"address_line2"];
-        address.city = cardInfo[@"address_city"];
-        address.state = cardInfo[@"address_state"];
-        address.country = cardInfo[@"address_country"];
-        address.postalCode = cardInfo[@"postalCode"];
-
-        cardParams.address = address;
-
-        cardParams.number = cardInfo[@"number"];
-        cardParams.expMonth = [cardInfo[@"expMonth"] intValue];
-        cardParams.expYear = [cardInfo[@"expYear"] intValue];
-        cardParams.cvc = cardInfo[@"cvc"];
-        cardParams.name = cardInfo[@"name"];
-        cardParams.currency = cardInfo[@"currency"];
-
-        [self.client createTokenWithCard:cardParams completion:[self handleTokenCallback:command]];
-
-    }];
-
-}
-
 - (void) createBankAccountToken:(CDVInvokedUrlCommand *)command
 {
     if (self.client == nil) {
@@ -123,92 +86,34 @@
 
 
     [self.commandDelegate runInBackground:^{
-        NSDictionary* const accountInfo = [command.arguments objectAtIndex:0];
+        NSDictionary* const data = [command.arguments objectAtIndex:0];
+
+        NSDictionary* const individual = data[@"individual"];
+        NSDictionary* const address = individual[@"address"];
+        NSDictionary* const dateOfBirth = individual[@"dob"];
         STPConnectAccountIndividualParams *individualParams = [STPConnectAccountIndividualParams new];
-        
-        
-        individualParams.email = accountInfo[@"individual_email"];
-        individualParams.firstName = accountInfo[@"individual_first_name"];
-        individualParams.lastName = accountInfo[@"individual_last_name"];
-        individualParams.gender = accountInfo[@"individual_gender"];
-        individualParams.phone = accountInfo[@"individual_phone"];
-        individualParams.dateOfBirth.day = (int) accountInfo[@"individual_dob_day"];
-        individualParams.dateOfBirth.month = (int) accountInfo[@"individual_dob_month"];
-        individualParams.dateOfBirth.year = (int) accountInfo[@"individual_dob_year"];
-        individualParams.ssnLast4 = accountInfo[@"individual_ssn_last_4"];
-        individualParams.address.city = accountInfo[@"individual_address_city"];
-        individualParams.address.country = accountInfo[@"individual_address_country"];
-        individualParams.address.line1 = accountInfo[@"individual_address_line1"];
-        individualParams.address.line2 = accountInfo[@"individual_address_line2"];
-        individualParams.address.postalCode = accountInfo[@"individual_address_postal_code"];
-        individualParams.address.state = accountInfo[@"individual_address_state"];
-        
+
+
+        individualParams.email = individual[@"email"];
+        individualParams.firstName = individual[@"first_name"];
+        individualParams.lastName = individual[@"last_name"];
+        individualParams.gender = individual[@"gender"];
+        individualParams.phone = individual[@"phone"];
+        individualParams.ssnLast4 = individual[@"individual_ssn_last_4"];
+        individualParams.dateOfBirth.day = (int) dateOfBirth[@"day"];
+        individualParams.dateOfBirth.month = (int) dateOfBirth[@"month"];
+        individualParams.dateOfBirth.year = (int) dateOfBirth[@"year"];
+        individualParams.address.city = address[@"city"];
+        individualParams.address.country = address[@"country"];
+        individualParams.address.line1 = address[@"line1"];
+        individualParams.address.line2 = address[@"line2"];
+        individualParams.address.postalCode = address[@"postal_code"];
+        individualParams.address.state = address[@"state"];
+
         STPConnectAccountParams *connectAccountParams = [[STPConnectAccountParams alloc] initWithTosShownAndAccepted:YES individual:individualParams];
-        
-        
-        
+
         [self.client createTokenWithConnectAccount:connectAccountParams completion:[self handleTokenCallback:command]];
     }];
-}
-
-- (void)validateCardNumber:(CDVInvokedUrlCommand *)command
-{
-    CDVCommandStatus status;
-    STPCardValidationState state = [STPCardValidator validationStateForNumber:[command.arguments objectAtIndex:0] validatingCardBrand:YES];
-
-    if (state == STPCardValidationStateValid) {
-        status = CDVCommandStatus_OK;
-    } else {
-        status = CDVCommandStatus_ERROR;
-    }
-
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:status];
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-}
-
-- (void)validateExpiryDate:(CDVInvokedUrlCommand *)command
-{
-    CDVCommandStatus status;
-    NSString *expMonth = [command.arguments objectAtIndex:0];
-    NSString *expYear = [command.arguments objectAtIndex:1];
-
-    if (expYear.length == 4) {
-        expYear = [expYear substringFromIndex:2];
-    }
-
-    STPCardValidationState state = [STPCardValidator validationStateForExpirationYear:expYear inMonth:expMonth];
-
-    if (state == STPCardValidationStateValid) {
-        status = CDVCommandStatus_OK;
-    } else {
-        status = CDVCommandStatus_ERROR;
-    }
-
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:status];
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-}
-
-- (void)validateCVC:(CDVInvokedUrlCommand *)command
-{
-    CDVCommandStatus status;
-    STPCardValidationState state = [STPCardValidator validationStateForCVC:[command.arguments objectAtIndex:0] cardBrand:STPCardBrandUnknown];
-
-    if (state == STPCardValidationStateValid) {
-        status = CDVCommandStatus_OK;
-    } else {
-        status = CDVCommandStatus_ERROR;
-    }
-
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:status];
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-}
-
-- (void)getCardType:(CDVInvokedUrlCommand *)command
-{
-    STPCardBrand brand = [STPCardValidator brandForNumber:[command.arguments objectAtIndex:0]];
-    NSArray *brands =  [[NSArray alloc] initWithObjects: @"Visa", @"American Express", @"MasterCard", @"Discover", @"JCB", @"Diners Club", @"Unknown", nil];
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:brands[brand]];
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
 @end
