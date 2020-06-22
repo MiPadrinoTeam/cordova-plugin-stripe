@@ -29,9 +29,11 @@
         <header-file src="src/ios/CordovaStripe.h" />
         <source-file src="src/ios/CordovaStripe.m" />
 
-        <framework src="Stripe" spec="19.3.0" />
         <podspec>
-            <pods use-frameworks="false">
+            <config>
+                <source url="https://github.com/CocoaPods/Specs.git"/>
+            </config>
+            <pods use-frameworks="true">
                 <pod name="Stripe" spec="19.3.0" />
             </pods>
         </podspec>
