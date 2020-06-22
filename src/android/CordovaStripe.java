@@ -77,7 +77,7 @@ public class CordovaStripe extends CordovaPlugin {
     try {
 
       JSONObject individual = data.getJSONObject("individual");
-      Address address = Address.fromJson(individual.getJSONObject("account"));
+      Address address = Address.fromJson(individual.getJSONObject("address"));
       JSONObject dob = individual.getJSONObject("dob");
       DateOfBirth dateOfBirth = new DateOfBirth(dob.getInt("day"), dob.getInt("month"), dob.getInt("year"));
       AccountParams.BusinessTypeParams.Individual.Builder individualParams = new AccountParams.BusinessTypeParams.Individual.Builder();
