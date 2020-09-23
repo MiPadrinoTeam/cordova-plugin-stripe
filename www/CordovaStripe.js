@@ -73,23 +73,6 @@ module.exports = {
     success = success || noop;
     error = error || noop;
 
-    // const params = {
-    //   individual_email: account.individual.email,
-    //   individual_first_name: account.individual.first_name,
-    //   individual_last_name: account.individual.last_name,
-    //   individual_gender: account.individual.gender,
-    //   individual_phone: account.individual.phone,
-    //   individual_ssn_last_4: account.individual.ssn_last_4,
-    //   individual_address_city: account.individual.address.city,
-    //   individual_address_country: account.individual.address.country,
-    //   individual_address_line1: account.individual.address.line1,
-    //   individual_address_line2: account.individual.address.line2,
-    //   individual_address_postal_code: account.individual.address.postal_code,
-    //   individual_address_state: account.individual.address.state,
-    //   individual_dob_day: account.individual.dob.day,
-    //   individual_dob_month: account.individual.dob.month,
-    //   individual_dob_year: account.individual.dob.year,
-    // };
     exec(success, error, "CordovaStripe", "createAccountToken", [data]);
   },
 

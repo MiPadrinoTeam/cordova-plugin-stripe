@@ -89,9 +89,24 @@
         NSDictionary* const data = [command.arguments objectAtIndex:0];
 
         NSDictionary* const individual = data[@"individual"];
-        NSDictionary* const address = individual[@"address"];
-        NSDictionary* const dateOfBirth = individual[@"dob"];
+        NSDictionary* const _address = individual[@"address"];
+        NSDictionary* const _dateOfBirth = individual[@"dob"];
+
         STPConnectAccountIndividualParams *individualParams = [STPConnectAccountIndividualParams new];
+        STPConnectAccountAddress *address = [STPConnectAccountAddress new];
+        NSDateComponents *dateOfBirth = [NSDateComponents new];
+
+        dateOfBirth.day = [_dateOfBirth[@"day"] integerValue];
+        dateOfBirth.month = [_dateOfBirth[@"month"] integerValue];
+        dateOfBirth.year = [_dateOfBirth[@"year"] integerValue];
+
+
+        address.city = _address[@"city"];
+        address.country = _address[@"country"];
+        address.line1 = _address[@"line1"];
+        address.line2 = _address[@"line2"];
+        address.postalCode = _address[@"postal_code"];
+        address.state = _address[@"state"];
 
 
         individualParams.email = individual[@"email"];
@@ -99,16 +114,9 @@
         individualParams.lastName = individual[@"last_name"];
         individualParams.gender = individual[@"gender"];
         individualParams.phone = individual[@"phone"];
-        individualParams.ssnLast4 = individual[@"individual_ssn_last_4"];
-        individualParams.dateOfBirth.day = (int) dateOfBirth[@"day"];
-        individualParams.dateOfBirth.month = (int) dateOfBirth[@"month"];
-        individualParams.dateOfBirth.year = (int) dateOfBirth[@"year"];
-        individualParams.address.city = address[@"city"];
-        individualParams.address.country = address[@"country"];
-        individualParams.address.line1 = address[@"line1"];
-        individualParams.address.line2 = address[@"line2"];
-        individualParams.address.postalCode = address[@"postal_code"];
-        individualParams.address.state = address[@"state"];
+        individualParams.ssnLast4 = individual[@"ssn_last_4"];
+        individualParams.address = address;
+        individualParams.dateOfBirth = dateOfBirth;
 
         STPConnectAccountParams *connectAccountParams = [[STPConnectAccountParams alloc] initWithTosShownAndAccepted:YES individual:individualParams];
 
